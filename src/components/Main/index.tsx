@@ -1,15 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
-import Constants from 'expo-constants';
+import AppBar from './components/AppBar';
 import RepositoryList from './components/RepositoryList';
 
-const styles = StyleSheet.create({
-  container: {
-    marginTop: Constants.statusBarHeight,
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-});
+const Main = () => {
+  return (
+    <>
+      <AppBar />
+      <RepositoryList />
+    </>
+  );
+};
 
-export default function Main() {
-  return <RepositoryList />;
-}
+export default Main;

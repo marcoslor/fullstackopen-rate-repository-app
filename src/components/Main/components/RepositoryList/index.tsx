@@ -1,13 +1,16 @@
-import { FlatList, View, StyleSheet, Text } from 'react-native';
-import Repository from '../../../types/Repository';
-import Constants from 'expo-constants';
+import RepositoryItem from './components/RepositoryItem';
+import { colors, layoutSizing } from '@/styles/Base';
+import Repository from '@/types/Repository';
+import { FlatList, View, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  separator: {
-    height: 10,
+  container: {
+    paddingTop: layoutSizing.s4,
+    backgroundColor: colors.dark.surface1,
   },
-  safeArea: {
-    marginTop: Constants.statusBarHeight,
+  separator: {
+    height: layoutSizing.s4,
+    backgroundColor: colors.dark.surface2,
   },
 });
 
@@ -60,29 +63,15 @@ const repositories: Array<Repository> = [
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-function RepositoryItem({ item }: { item: Repository }) {
-  return (
-    <View>
-      <Text>Full name: {item.fullName}</Text>
-      <Text>Description: {item.description}</Text>
-      <Text>Language: {item.language}</Text>
-      <Text>Stars: {item.stargazersCount}</Text>
-      <Text>Forks: {item.forksCount}</Text>
-      <Text>Reviews: {item.reviewCount}</Text>
-      <Text>Rating: {item.ratingAverage}</Text>
-    </View>
-  );
-}
-
-function RepositoryList() {
+const RepositoryList = () => {
   return (
     <FlatList
+      style={styles.container}
       data={repositories}
       ItemSeparatorComponent={ItemSeparator}
       renderItem={({ item }) => <RepositoryItem item={item} />}
-      style={styles.safeArea}
     />
   );
-}
+};
 
 export default RepositoryList;
