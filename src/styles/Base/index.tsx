@@ -4,6 +4,8 @@ const BRAND_HUE = 210;
 const BRAND_SATURATION = 70;
 const BRAND_LIGHTNESS = 50;
 
+const ERROR_HUE = 6;
+
 export const dimensions = {
   fullHeight: Dimensions.get('window').height,
   fullWidth: Dimensions.get('window').width,
@@ -31,6 +33,7 @@ export const colors = {
     surface2: `hsl(${BRAND_HUE}, 10%, 15%)`,
     surface3: `hsl(${BRAND_HUE}, 5%, 20%)`,
     surface4: `hsl(${BRAND_HUE}, 5%, 25%)`,
+    error: `hsl(${ERROR_HUE}, 100%, 50%)`,
   },
 } as const;
 

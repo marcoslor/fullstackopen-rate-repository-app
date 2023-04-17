@@ -1,6 +1,6 @@
 import { colors, layoutSizing } from '../../styles/Base';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Formik } from 'formik';
+import { Formik, useField } from 'formik';
 import { useState } from 'react';
 import {
   Button,
@@ -10,6 +10,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import * as Yup from 'yup';
+
+const SignInSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Required'),
+  password: Yup.string().required('Required'),
+});
+
+type SignInFormValues = Yup.InferType<typeof SignInSchema>;
 
 const FIELDS_SPACING = layoutSizing.s4;
 
@@ -23,7 +31,6 @@ const styles = StyleSheet.create({
     height: layoutSizing.s16,
     paddingHorizontal: layoutSizing.s4,
     borderWidth: 1,
-    borderColor: colors.dark.surface4,
     backgroundColor: colors.dark.surface2,
     color: colors.dark.text1,
   },
@@ -33,7 +40,6 @@ const styles = StyleSheet.create({
   },
   passwordWrapper: {
     position: 'relative',
-    marginBottom: layoutSizing.s6,
   },
   pressable: {
     position: 'absolute',
@@ -49,27 +55,55 @@ const styles = StyleSheet.create({
     marginRight: layoutSizing.s2,
     padding: layoutSizing.s2,
   },
+  errorText: {
+    color: colors.dark.error,
+  },
 });
-const SignInForm = ({ handleChange, values }) => {
-  const [showPassword, setShowPassword] = useState(false);
+
+const FormikTextInput = ({ name, ...props }) => {
+  const [field, meta, helpers] = useField(name);
+
+  // Check if the field is touched and the error message is present
+  const showError = meta.touched && meta.error;
 
   return (
-    <View>
+    <>
       <TextInput
-        placeholder="Email"
-        placeholderTextColor={colors.dark.text3}
-        onChangeText={handleChange('email')}
-        value={values.email}
-        style={{ ...styles.input, marginBottom: FIELDS_SPACING }}
+        onChangeText={(value) => helpers.setValue(value)}
+        onBlur={() => helpers.setTouched(true)}
+        value={field.value}
+        style={{
+          ...styles.input,
+          borderColor: showError ? colors.dark.error : colors.dark.surface4,
+        }}
+        {...props}
       />
+      {/* Show the error message if the value of showError variable is true  */}
+      {showError && <Text style={styles.errorText}>{meta.error}</Text>}
+    </>
+  );
+};
+
+const FormikPasswordInput = ({ name, ...props }) => {
+  const [field, meta, helpers] = useField(name);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Check if the field is touched and the error message is present
+  const showError = meta.touched && meta.error;
+
+  return (
+    <>
       <View style={styles.passwordWrapper}>
         <TextInput
-          placeholder="Password"
-          placeholderTextColor={colors.dark.text3}
-          onChangeText={handleChange('password')}
-          value={values.password}
-          style={{ ...styles.input, paddingRight: layoutSizing.s16 }}
+          onChangeText={(value) => helpers.setValue(value)}
+          onBlur={() => helpers.setTouched(true)}
+          value={field.value}
+          style={{
+            ...styles.input,
+            borderColor: showError ? colors.dark.error : colors.dark.surface4,
+          }}
           secureTextEntry={!showPassword}
+          {...props}
         />
         <Pressable
           onPress={() => setShowPassword(!showPassword)}
@@ -84,20 +118,52 @@ const SignInForm = ({ handleChange, values }) => {
           </View>
         </Pressable>
       </View>
-      <Button title="Submit" />
+      {/* Show the error message if the value of showError variable is true  */}
+      {showError && <Text style={styles.errorText}>{meta.error}</Text>}
+    </>
+  );
+};
+
+const SignInForm = ({ handleSubmit }) => {
+  return (
+    <View>
+      <View style={{ marginBottom: FIELDS_SPACING }}>
+        <FormikTextInput
+          name="email"
+          placeholder="Email"
+          placeholderTextColor={colors.dark.text3}
+        />
+      </View>
+      <View style={{ marginBottom: FIELDS_SPACING + 8 }}>
+        <FormikPasswordInput
+          name={'password'}
+          placeholder={'Password'}
+          placeholderTextColor={colors.dark.text3}
+        />
+      </View>
+      <Button title="Submit" onPress={handleSubmit} />
     </View>
   );
 };
 
 const SignIn = () => {
-  const onSubmit = (values) => {
+  const onSubmit = (values: SignInFormValues) => {
     console.log(values);
+  };
+
+  const initialValues: SignInFormValues = {
+    email: '',
+    password: '',
   };
 
   return (
     <View style={styles.container}>
-      <Formik initialValues={{ email: '', password: '' }} onSubmit={onSubmit}>
-        {SignInForm}
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validationSchema={SignInSchema}
+      >
+        {({ handleSubmit }) => <SignInForm handleSubmit={handleSubmit} />}
       </Formik>
     </View>
   );
