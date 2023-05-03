@@ -1,6 +1,7 @@
 import { colors, fontSizing, layoutSizing } from '@/styles/Base';
 import type Repository from '@/types/Repository';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import { Paragraph, Stack } from 'tamagui';
 
 const separator1 = layoutSizing.s4;
 
@@ -29,9 +30,7 @@ const styles = StyleSheet.create({
     marginRight: layoutSizing.s6,
   },
   fullName: {
-    fontWeight: 'bold',
     fontSize: fontSizing.xl,
-    color: colors.dark.text1,
     marginBottom: separator1,
   },
   description: {
@@ -48,7 +47,6 @@ const styles = StyleSheet.create({
     padding: layoutSizing.s2,
     borderRadius: layoutSizing.s1,
     overflow: 'hidden',
-    color: colors.dark.text1,
   },
   statsWrapper: {
     flexDirection: 'row',
@@ -60,7 +58,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statTitle: {
-    color: colors.dark.text1,
     fontWeight: 'bold',
   },
   statValue: {
@@ -83,24 +80,43 @@ const RepositoryItem = ({ item }: { item: Repository }) => {
     Rating: item.ratingAverage,
   };
   return (
-    <View style={styles.repositoryItemContainer}>
+    <Stack
+      backgroundColor={'$background'}
+      style={styles.repositoryItemContainer}
+    >
       <View style={styles.itemInfoWrapper}>
         <Image style={styles.avatar} source={{ uri: item.ownerAvatarUrl }} />
         <View style={styles.itemInfoListWrapper}>
-          <Text style={styles.fullName}>{item.fullName}</Text>
-          <Text style={styles.description}>{item.description}</Text>
-          <Text style={styles.language}>{item.language}</Text>
+          <Paragraph
+            fontWeight={'bold'}
+            fontSize={16}
+            marginBottom={separator1}
+          >
+            {item.fullName}
+          </Paragraph>
+          <Paragraph marginBottom={separator1} color={'$color11'}>
+            {item.description}
+          </Paragraph>
+          <Paragraph
+            backgroundColor={'$blue10'}
+            flex={0}
+            padding={layoutSizing.s2}
+            borderRadius={layoutSizing.s1}
+            overflow={'hidden'}
+          >
+            {item.language}
+          </Paragraph>
         </View>
       </View>
       <View style={styles.statsWrapper}>
         {Object.entries(details).map(([key, value]) => (
           <View key={key} style={styles.statColumn}>
-            <Text style={styles.statTitle}>{key}</Text>
-            <Text style={styles.statValue}>{toK(value)}</Text>
+            <Paragraph style={styles.statTitle}>{key}</Paragraph>
+            <Paragraph color={'$color11'}>{toK(value)}</Paragraph>
           </View>
         ))}
       </View>
-    </View>
+    </Stack>
   );
 };
 

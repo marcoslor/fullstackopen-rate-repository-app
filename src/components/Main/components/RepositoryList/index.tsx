@@ -1,18 +1,7 @@
 import RepositoryItem from './components/RepositoryItem';
-import { colors, layoutSizing } from '@/styles/Base';
 import Repository from '@/types/Repository';
-import { FlatList, View, StyleSheet } from 'react-native';
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: layoutSizing.s4,
-    backgroundColor: colors.dark.surface1,
-  },
-  separator: {
-    height: layoutSizing.s4,
-    backgroundColor: colors.dark.surface2,
-  },
-});
+import { FlatList } from 'react-native';
+import { Stack } from 'tamagui';
 
 const repositories: Array<Repository> = [
   {
@@ -61,12 +50,13 @@ const repositories: Array<Repository> = [
   },
 ];
 
-const ItemSeparator = () => <View style={styles.separator} />;
+const ItemSeparator = () => (
+  <Stack height={'$0.75'} backgroundColor={'$backgroundStrong'} />
+);
 
 const RepositoryList = () => {
   return (
     <FlatList
-      style={styles.container}
       data={repositories}
       ItemSeparatorComponent={ItemSeparator}
       renderItem={({ item }) => <RepositoryItem item={item} />}
