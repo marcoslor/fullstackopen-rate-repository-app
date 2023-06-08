@@ -32,6 +32,7 @@ module.exports = function (api) {
             '@/components': './src/components',
             '@/styles': './src/styles',
             '@/types': './src/types',
+            '@/utils': './src/utils',
           },
         },
       ],
