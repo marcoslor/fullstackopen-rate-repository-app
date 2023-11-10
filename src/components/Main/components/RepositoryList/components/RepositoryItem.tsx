@@ -1,67 +1,16 @@
 import { colors, fontSizing, layoutSizing } from '@/styles/Base';
-import type Repository from '@/types/Repository';
 import { Image, StyleSheet, View } from 'react-native';
-import { Paragraph, Stack } from 'tamagui';
+import { Paragraph, Stack, XStack, YStack } from 'tamagui';
+import { FragmentType, gql, useFragment } from '@/gql';
 
 const separator1 = layoutSizing.s4;
 
 const styles = StyleSheet.create({
-  repositoryItemContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: layoutSizing.s6,
-  },
-  itemInfoWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginBottom: layoutSizing.s6,
-  },
-  itemInfoListWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    alignItems: 'flex-start',
-    marginTop: layoutSizing.s1,
-  },
   avatar: {
     width: layoutSizing.s16,
     height: layoutSizing.s16,
     borderRadius: layoutSizing.s1,
     marginRight: layoutSizing.s6,
-  },
-  fullName: {
-    fontSize: fontSizing.xl,
-    marginBottom: separator1,
-  },
-  description: {
-    color: colors.dark.text2,
-    marginBottom: separator1,
-  },
-  languageWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  language: {
-    backgroundColor: colors.dark.brand,
-    flex: 0,
-    padding: layoutSizing.s2,
-    borderRadius: layoutSizing.s1,
-    overflow: 'hidden',
-  },
-  statsWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
-  statColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  statTitle: {
-    fontWeight: 'bold',
-  },
-  statValue: {
-    color: colors.dark.text2,
   },
 });
 
@@ -72,24 +21,40 @@ const toK = (n: number) => {
   return `${(n / 1000).toFixed(1)}k`;
 };
 
-const RepositoryItem = ({ item }: { item: Repository }) => {
+const Repository_Fragment = gql(`
+  fragment Repository_Fragment on Repository {
+    id
+    fullName
+    description
+    language
+    forksCount
+    stargazersCount
+    ratingAverage
+    reviewCount
+    ownerAvatarUrl
+  }
+`);
+
+const RepositoryItem = (props: {
+  item: FragmentType<typeof Repository_Fragment>;
+}) => {
+  const item = useFragment(Repository_Fragment, props.item);
+
   const details = {
     Stars: item.stargazersCount,
     Forks: item.forksCount,
     Reviews: item.reviewCount,
     Rating: item.ratingAverage,
   };
+
   return (
-    <Stack
-      backgroundColor={'$background'}
-      style={styles.repositoryItemContainer}
-    >
-      <View style={styles.itemInfoWrapper}>
+    <YStack backgroundColor={'$background'} padding={layoutSizing.s6}>
+      <XStack marginBottom={layoutSizing.s6}>
         <Image style={styles.avatar} source={{ uri: item.ownerAvatarUrl }} />
-        <View style={styles.itemInfoListWrapper}>
+        <YStack alignItems="flex-start" width={'100%'} flex={1}>
           <Paragraph
             fontWeight={'bold'}
-            fontSize={16}
+            fontSize={'$5'}
             marginBottom={separator1}
           >
             {item.fullName}
@@ -100,23 +65,23 @@ const RepositoryItem = ({ item }: { item: Repository }) => {
           <Paragraph
             backgroundColor={'$blue10'}
             flex={0}
-            padding={layoutSizing.s2}
-            borderRadius={layoutSizing.s1}
+            padding={'$1'}
+            borderRadius={'$0.5'}
             overflow={'hidden'}
           >
             {item.language}
           </Paragraph>
-        </View>
-      </View>
-      <View style={styles.statsWrapper}>
+        </YStack>
+      </XStack>
+      <XStack justifyContent="space-evenly">
         {Object.entries(details).map(([key, value]) => (
-          <View key={key} style={styles.statColumn}>
-            <Paragraph style={styles.statTitle}>{key}</Paragraph>
+          <YStack key={key} alignItems="center">
+            <Paragraph fontWeight="bold">{key}</Paragraph>
             <Paragraph color={'$color11'}>{toK(value)}</Paragraph>
-          </View>
+          </YStack>
         ))}
-      </View>
-    </Stack>
+      </XStack>
+    </YStack>
   );
 };
 

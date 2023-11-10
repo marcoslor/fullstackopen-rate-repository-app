@@ -1,11 +1,14 @@
-import { createAnimations } from '@tamagui/animations-react-native';
-import { createMedia } from '@tamagui/react-native-media-driver';
-import { shorthands } from '@tamagui/shorthands';
-import { themes, tokens } from '@tamagui/themes';
+import { config } from '@tamagui/config/v2';
+import { createFont, createTamagui } from 'tamagui';
 import { Platform } from 'react-native';
-import { createFont, createTamagui, getVariableValue } from 'tamagui';
 
-const defaultFontSizes = {
+const family = Platform.select({
+  ios: 'Arial',
+  android: 'Roboto',
+  default: 'System',
+});
+
+const fontSizes = {
   1: 11,
   2: 12,
   3: 13,
@@ -13,96 +16,45 @@ const defaultFontSizes = {
   5: 16,
   6: 18,
   7: 20,
-  8: 23,
+  8: 22,
   9: 30,
-  10: 46,
-  11: 55,
+  10: 42,
+  11: 52,
   12: 62,
   13: 72,
   14: 92,
   15: 114,
-  16: 134,
-};
+  16: 124,
+} as const;
 
-const sizeLineHeight = (size) => size + 10;
+const sizeLineHeight = (val: number) => val * 1.35;
 
-const appFont = createFont({
-  family: Platform.select({
-    ios: 'Arial',
-    android: 'Roboto',
-    default: 'System',
-  }),
+const font = createFont({
+  family,
+  size: fontSizes,
   lineHeight: Object.fromEntries(
-    Object.entries(defaultFontSizes).map(([k, v]) => [
-      k,
-      sizeLineHeight(getVariableValue(v)),
-    ])
+    Object.entries(fontSizes).map(([k, v]) => [k, sizeLineHeight(+v)])
   ),
-  weight: {
-    4: '300',
-  },
-  letterSpacing: {
-    4: 0,
-  },
-  size: defaultFontSizes,
+  weight: { 0: '300' },
+  letterSpacing: { 4: 0 },
+  sizeLineHeight: (size) => Math.round(size * 1.1 + (size < 30 ? 10 : 5)),
 });
 
-const animations = createAnimations({
-  bouncy: {
-    type: 'spring',
-    damping: 10,
-    mass: 0.9,
-    stiffness: 100,
-  },
-  lazy: {
-    type: 'spring',
-    damping: 20,
-    stiffness: 60,
-  },
-  quick: {
-    type: 'spring',
-    damping: 20,
-    mass: 1.2,
-    stiffness: 250,
-  },
-});
-
-const config = createTamagui({
-  animations,
+const appConfig = createTamagui({
+  ...config,
   defaultTheme: 'dark',
-  shouldAddPrefersColorThemes: false,
-  themeClassNameOnRoot: false,
-  shorthands,
   fonts: {
-    heading: appFont,
-    body: appFont,
+    body: font,
   },
-  themes,
-  tokens,
-  media: createMedia({
-    xs: { maxWidth: 660 },
-    sm: { maxWidth: 800 },
-    md: { maxWidth: 1020 },
-    lg: { maxWidth: 1280 },
-    xl: { maxWidth: 1420 },
-    xxl: { maxWidth: 1600 },
-    gtXs: { minWidth: 660 + 1 },
-    gtSm: { minWidth: 800 + 1 },
-    gtMd: { minWidth: 1020 + 1 },
-    gtLg: { minWidth: 1280 + 1 },
-    short: { maxHeight: 820 },
-    tall: { minHeight: 820 },
-    hoverNone: { hover: 'none' },
-    pointerCoarse: { pointer: 'coarse' },
-  }),
 });
 
-export type AppConfig = typeof config;
+export type AppConfig = typeof appConfig;
 
 declare module 'tamagui' {
+  // or '@tamagui/core'
   // overrides TamaguiCustomConfig so your custom types
   // work everywhere you import `tamagui`
   type TamaguiCustomConfig = AppConfig;
 }
 
-export default config;
+export default appConfig;
