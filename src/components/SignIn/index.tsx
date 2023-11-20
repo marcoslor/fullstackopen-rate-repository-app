@@ -2,18 +2,14 @@ import { colors, layoutSizing } from '../../styles/Base';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Formik, useField } from 'formik';
 import { useState } from 'react';
-import {
-  Button,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Yup from 'yup';
+import { Button, Input } from 'tamagui';
+import { useNavigate } from 'react-router-native';
+import { useSignIn } from '@/hooks';
 
-const SignInSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Required'),
+const SignInSchema = Yup.object({
+  username: Yup.string().required('Required'),
   password: Yup.string().required('Required'),
 });
 
@@ -30,9 +26,6 @@ const styles = StyleSheet.create({
   input: {
     height: layoutSizing.s16,
     paddingHorizontal: layoutSizing.s4,
-    borderWidth: 1,
-    backgroundColor: colors.dark.surface2,
-    color: colors.dark.text1,
   },
   submit: {
     backgroundColor: colors.dark.brand,
@@ -68,7 +61,7 @@ const FormikTextInput = ({ name, ...props }) => {
 
   return (
     <>
-      <TextInput
+      <Input
         onChangeText={(value) => helpers.setValue(value)}
         onBlur={() => helpers.setTouched(true)}
         value={field.value}
@@ -76,6 +69,7 @@ const FormikTextInput = ({ name, ...props }) => {
           ...styles.input,
           borderColor: showError ? colors.dark.error : colors.dark.surface4,
         }}
+        autoCapitalize="none"
         {...props}
       />
       {/* Show the error message if the value of showError variable is true  */}
@@ -94,7 +88,7 @@ const FormikPasswordInput = ({ name, ...props }) => {
   return (
     <>
       <View style={styles.passwordWrapper}>
-        <TextInput
+        <Input
           onChangeText={(value) => helpers.setValue(value)}
           onBlur={() => helpers.setTouched(true)}
           value={field.value}
@@ -103,6 +97,7 @@ const FormikPasswordInput = ({ name, ...props }) => {
             borderColor: showError ? colors.dark.error : colors.dark.surface4,
           }}
           secureTextEntry={!showPassword}
+          autoCapitalize="none"
           {...props}
         />
         <Pressable
@@ -129,8 +124,8 @@ const SignInForm = ({ handleSubmit }) => {
     <View>
       <View style={{ marginBottom: FIELDS_SPACING }}>
         <FormikTextInput
-          name="email"
-          placeholder="Email"
+          name="username"
+          placeholder="Username"
           placeholderTextColor={colors.dark.text3}
         />
       </View>
@@ -141,18 +136,30 @@ const SignInForm = ({ handleSubmit }) => {
           placeholderTextColor={colors.dark.text3}
         />
       </View>
-      <Button title="Submit" onPress={handleSubmit} />
+      <Button onPress={handleSubmit} size={'$4'}>
+        Submit
+      </Button>
     </View>
   );
 };
 
 const SignIn = () => {
-  const onSubmit = (values: SignInFormValues) => {
-    console.log(values);
+  const navigate = useNavigate();
+  const [signInMutation, data] = useSignIn();
+
+  const onSubmit = async (values: SignInFormValues) => {
+    const success = await signInMutation({
+      username: values.username,
+      password: values.password,
+    });
+
+    if (success) {
+      navigate('/');
+    }
   };
 
   const initialValues: SignInFormValues = {
-    email: '',
+    username: '',
     password: '',
   };
 
