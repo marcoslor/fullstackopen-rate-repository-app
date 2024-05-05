@@ -25,7 +25,7 @@ const RepositoryList = () => {
     fetchPolicy: 'cache-and-network',
   });
 
-  if (loading || error) {
+  if (loading || error || !data) {
     return null;
   }
 

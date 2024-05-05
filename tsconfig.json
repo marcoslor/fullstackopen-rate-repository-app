@@ -1,9 +1,20 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "strict": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./schema.graphql",
+        "disableTypegen": true,
+        "templateIsCallExpression": true,
+        "template": "graphql"
+      }
+    ]
   },
-  "extends": "expo/tsconfig.base"
+  "types": ["jest", "react-native", "@types/jest"]
 }

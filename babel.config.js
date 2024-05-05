@@ -29,13 +29,7 @@ module.exports = function (api) {
         {
           root: ['./'],
           alias: {
-            '@/components': './src/components',
-            '@/contexts': './src/contexts',
-            '@/styles': './src/styles',
-            '@/hooks': './src/hooks',
-            '@/types': './src/types',
-            '@/utils': './src/utils',
-            '@/gql': './src/gql',
+            '@': './src',
           },
         },
       ],

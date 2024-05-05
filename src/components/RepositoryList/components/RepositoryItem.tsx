@@ -1,6 +1,6 @@
-import { colors, fontSizing, layoutSizing } from '@/styles/Base';
-import { Image, StyleSheet, View } from 'react-native';
-import { Paragraph, Stack, XStack, YStack } from 'tamagui';
+import { layoutSizing } from '@/styles/Base';
+import { Image, StyleSheet } from 'react-native';
+import { Paragraph, XStack, YStack } from 'tamagui';
 import { FragmentType, gql, useFragment } from '@/gql';
 
 const separator1 = layoutSizing.s4;
@@ -21,7 +21,7 @@ const toK = (n: number) => {
   return `${(n / 1000).toFixed(1)}k`;
 };
 
-const Repository_Fragment = gql(`
+export const Repository_Fragment = gql(`
   fragment Repository_Fragment on Repository {
     id
     fullName
@@ -41,16 +41,19 @@ const RepositoryItem = (props: {
   const item = useFragment(Repository_Fragment, props.item);
 
   const details = {
-    Stars: item.stargazersCount,
-    Forks: item.forksCount,
-    Reviews: item.reviewCount,
-    Rating: item.ratingAverage,
+    Stars: item.stargazersCount ?? 0,
+    Forks: item.forksCount ?? 0,
+    Reviews: item.reviewCount ?? 0,
+    Rating: item.ratingAverage ?? 0,
   };
 
   return (
     <YStack backgroundColor={'$background'} padding={layoutSizing.s6}>
       <XStack marginBottom={layoutSizing.s6}>
-        <Image style={styles.avatar} source={{ uri: item.ownerAvatarUrl }} />
+        <Image
+          style={styles.avatar}
+          source={{ uri: item.ownerAvatarUrl ?? '' }}
+        />
         <YStack alignItems="flex-start" width={'100%'} flex={1}>
           <Paragraph
             fontWeight={'bold'}
