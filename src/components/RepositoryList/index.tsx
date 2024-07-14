@@ -1,4 +1,4 @@
-import RepositoryItem from './components/RepositoryItem';
+import { RepositoryListItemView } from './components/RepositoryItem';
 import { FlatList } from 'react-native';
 import { View } from 'tamagui';
 import { gql } from '@/gql';
@@ -35,7 +35,7 @@ const RepositoryList = () => {
     <FlatList
       data={repositories}
       ItemSeparatorComponent={ItemSeparator}
-      renderItem={({ item }) => <RepositoryItem item={item} />}
+      renderItem={({ item }) => <RepositoryListItemView item={item} />}
     />
   );
 };

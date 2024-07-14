@@ -10,6 +10,8 @@ import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { Route, Routes, Navigate, NativeRouter } from 'react-router-native';
 import { TamaguiProvider, Theme } from 'tamagui';
+import { RepositoryItemView } from './RepositoryItemView';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const authStorage = createAuthStorage();
 const apolloClient = createApolloClient(authStorage);
@@ -18,6 +20,7 @@ const Main = () => {
   const [loaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
+    ionicons: Ionicons.font,
   });
 
   if (!loaded) {
@@ -36,6 +39,10 @@ const Main = () => {
                 <Route path="/" element={<RepositoryList />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
                 <Route path="/signin" element={<SignIn />} />
+                <Route
+                  path="/repository/:id"
+                  element={<RepositoryItemView />}
+                />
               </Routes>
             </NativeRouter>
           </Theme>

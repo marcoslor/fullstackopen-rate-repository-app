@@ -2,6 +2,8 @@ import { layoutSizing } from '@/styles/Base';
 import { Image, StyleSheet } from 'react-native';
 import { Paragraph, XStack, YStack } from 'tamagui';
 import { FragmentType, gql, useFragment } from '@/gql';
+import { A } from '@expo/html-elements';
+import { Link } from 'react-router-native';
 
 const separator1 = layoutSizing.s4;
 
@@ -34,6 +36,34 @@ export const Repository_Fragment = gql(`
     ownerAvatarUrl
   }
 `);
+
+const FullRepositoryItemView = (props: {
+  item: FragmentType<typeof Repository_Fragment>;
+}) => {
+  const item = useFragment(Repository_Fragment, props.item);
+
+  return (
+    <A href={`https://github.com/${item.fullName}`}>
+      <YStack>
+        <RepositoryItem item={props.item} />;
+      </YStack>
+    </A>
+  );
+};
+
+const RepositoryListItemView = (props: {
+  item: FragmentType<typeof Repository_Fragment>;
+}) => {
+  const item = useFragment(Repository_Fragment, props.item);
+
+  return (
+    <Link to={`/repository/${item.id}`}>
+      <YStack>
+        <RepositoryItem item={props.item} />;
+      </YStack>
+    </Link>
+  );
+};
 
 const RepositoryItem = (props: {
   item: FragmentType<typeof Repository_Fragment>;
@@ -88,4 +118,4 @@ const RepositoryItem = (props: {
   );
 };
 
-export default RepositoryItem;
+export { RepositoryListItemView, FullRepositoryItemView };
