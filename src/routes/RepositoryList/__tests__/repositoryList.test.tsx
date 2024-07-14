@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing';
+import type { MockedResponse } from '@apollo/client/testing';
 import { render } from '@testing-library/react-native';
 import { gql } from '@/gql';
 import { MockedTestProvider } from '@/__tests__/utils/MockedTestProvider';

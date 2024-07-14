@@ -22,7 +22,6 @@ describe('SignIn', () => {
       fireEvent.press(screen.getByText('Submit'));
 
       await waitFor(() => {
-        // expect the onSubmit function to have been called once and with a correct first argument
         expect(onSubmit).toHaveBeenCalledTimes(1);
       });
     });
@@ -31,8 +30,8 @@ describe('SignIn', () => {
       const onSubmit = jest.fn();
       renderWithTamagui(<SignInForm onSubmit={onSubmit} />);
 
+      // fill the form
       act(() => {
-        // fill the form
         fireEvent.changeText(screen.getByPlaceholderText('Username'), 'kalle');
         fireEvent.changeText(screen.getByPlaceholderText('Password'), '');
       });
@@ -41,14 +40,14 @@ describe('SignIn', () => {
       fireEvent.press(screen.getByText('Submit'));
 
       await waitFor(() => {
-        // expect the onSubmit function to have been called once and with a correct first argument
-        expect(onSubmit).toHaveBeenCalledTimes(0);
-
         // expect the input has an error outline
         expect(screen.getByPlaceholderText('Password')).toHaveStyle({
           borderColor: colors.dark.error,
         });
       });
+
+      // expect the onSubmit function to not have been called
+      expect(onSubmit).toHaveBeenCalledTimes(0);
     });
   });
 });

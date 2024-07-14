@@ -1,6 +1,6 @@
 import { gql } from '@/gql';
-import { useApolloClient, useMutation } from '@apollo/client';
-import { AuthenticateInput } from '@/gql/__generated__/graphql';
+import type { AuthenticateInput } from '@/gql/__generated__/graphql';
+import { useMutation } from '@apollo/client';
 import { useAuthStorage } from './useAuthStorage';
 
 const SIGN_IN_MUTATION = gql(`
@@ -22,9 +22,13 @@ const useSignIn = () => {
       return false;
     }
 
-    console.log({ response });
+    const accessToken = response?.data?.authenticate?.accessToken;
 
-    await setToken(response.data.authenticate.accessToken);
+    if (!accessToken) {
+      return false;
+    }
+
+    await setToken(accessToken);
 
     return true;
   };

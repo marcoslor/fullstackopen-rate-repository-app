@@ -3,9 +3,12 @@ import * as Yup from 'yup';
 
 const createAuthStorage = (namespace = 'auth') => ({
   async getAccessToken() {
-    const rawAccess = await AsyncStorage.getItem(`${namespace}:accessToken`);
-
-    return Yup.string().nullable().validateSync(rawAccess);
+    try {
+      const rawAccess = await AsyncStorage.getItem(`${namespace}:accessToken`);
+      return Yup.string().nullable().validateSync(rawAccess);
+    } catch {
+      return null;
+    }
   },
   async setAccessToken(accessToken: string) {
     // Add the access token to the storage
@@ -19,4 +22,4 @@ const createAuthStorage = (namespace = 'auth') => ({
 
 type AuthStorageType = ReturnType<typeof createAuthStorage>;
 
-export { createAuthStorage, AuthStorageType };
+export { createAuthStorage, type AuthStorageType };

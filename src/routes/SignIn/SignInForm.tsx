@@ -1,20 +1,18 @@
-import { colors, layoutSizing } from '../../styles/Base';
+import {
+  type FormikInputProps,
+  FormikTextInput,
+} from '@/components/form/FormikTextInput';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Formik, useField } from 'formik';
 import { useState } from 'react';
-import {
-  GestureResponderEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { Button, Input } from 'tamagui';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Button, Input, TextArea } from 'tamagui';
 import * as Yup from 'yup';
+import { colors, layoutSizing } from '../../styles/Base';
 
 const FIELDS_SPACING = layoutSizing.s4;
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     minHeight: '100%',
     backgroundColor: colors.dark.surface1,
@@ -50,36 +48,11 @@ const styles = StyleSheet.create({
   },
 });
 
-type FormikInputProps = React.ComponentProps<typeof Input> & {
-  name: string;
-};
-
-const FormikTextInput = ({ name, ...props }: FormikInputProps) => {
-  const [field, meta, helpers] = useField(name);
-
-  // Check if the field is touched and the error message is present
-  const showError = meta.touched && meta.error;
-
-  return (
-    <>
-      <Input
-        onChangeText={(value) => helpers.setValue(value)}
-        onBlur={() => helpers.setTouched(true)}
-        value={field.value}
-        style={{
-          ...styles.input,
-          borderColor: showError ? colors.dark.error : colors.dark.surface4,
-        }}
-        autoCapitalize="none"
-        {...props}
-      />
-      {/* Show the error message if the value of showError variable is true  */}
-      {showError && <Text style={styles.errorText}>{meta.error}</Text>}
-    </>
-  );
-};
-
-const FormikPasswordInput = ({ name, ...props }: FormikInputProps) => {
+const FormikPasswordInput = ({
+  name,
+  inputProps,
+  errorProps,
+}: FormikInputProps) => {
   const [field, meta, helpers] = useField(name);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -99,7 +72,7 @@ const FormikPasswordInput = ({ name, ...props }: FormikInputProps) => {
           }}
           secureTextEntry={!showPassword}
           autoCapitalize="none"
-          {...props}
+          {...inputProps}
         />
         <Pressable
           onPress={() => setShowPassword(!showPassword)}
@@ -115,7 +88,11 @@ const FormikPasswordInput = ({ name, ...props }: FormikInputProps) => {
         </Pressable>
       </View>
       {/* Show the error message if the value of showError variable is true  */}
-      {showError && <Text style={styles.errorText}>{meta.error}</Text>}
+      {showError && (
+        <TextArea style={styles.errorText} {...errorProps}>
+          {meta.error}
+        </TextArea>
+      )}
     </>
   );
 };
@@ -128,32 +105,38 @@ const SignInSchema = Yup.object({
 });
 
 const initialValues: SignInFormValues = {
-  username: '',
-  password: '',
+  username: 'kalle',
+  password: 'password',
 };
 
-const SignInFormView = ({ handleSubmit }: { handleSubmit: any }) => {
+type ButtonOnPressType = React.ComponentProps<typeof Button>['onPress'];
+
+const SignInFormView = ({
+  handleSubmit,
+}: {
+  handleSubmit: ButtonOnPressType;
+}) => {
   return (
     <View>
       <View style={{ marginBottom: FIELDS_SPACING }}>
         <FormikTextInput
           name="username"
-          placeholder="Username"
-          placeholderTextColor={colors.dark.text3}
+          inputProps={{
+            placeholder: 'Username',
+            placeholderTextColor: colors.dark.text3,
+          }}
         />
       </View>
       <View style={{ marginBottom: FIELDS_SPACING + 8 }}>
         <FormikPasswordInput
           name={'password'}
-          placeholder={'Password'}
-          placeholderTextColor={colors.dark.text3}
+          inputProps={{
+            placeholder: 'Password',
+            placeholderTextColor: colors.dark.text3,
+          }}
         />
       </View>
-      <Button
-        onPress={handleSubmit as (event: GestureResponderEvent) => void}
-        size={'$4'}
-        role="button"
-      >
+      <Button onPress={handleSubmit} size={'$4'} role="button">
         Submit
       </Button>
     </View>
@@ -165,15 +148,21 @@ const SignInForm = ({
 }: {
   onSubmit: (values: SignInFormValues) => void;
 }) => {
+  const handlePress = (handleSubmit: () => void) => () => {
+    handleSubmit();
+  };
+
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
       validationSchema={SignInSchema}
     >
-      {({ handleSubmit }) => <SignInFormView handleSubmit={handleSubmit} />}
+      {({ handleSubmit }) => (
+        <SignInFormView handleSubmit={handlePress(handleSubmit)} />
+      )}
     </Formik>
   );
 };
 
-export { SignInForm, SignInFormValues };
+export { SignInForm, type SignInFormValues };

@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
 import { TamaguiProvider } from 'tamagui';
 import tamaguiConfig from '../../../tamagui.config';
 import { render } from '@testing-library/react-native';

@@ -4,7 +4,9 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "plugins": [
       {
@@ -16,5 +18,9 @@
       }
     ]
   },
-  "types": ["jest", "react-native", "@types/jest"]
+  "types": [
+    "jest",
+    "react-native",
+    "@types/jest"
+  ]
 }
