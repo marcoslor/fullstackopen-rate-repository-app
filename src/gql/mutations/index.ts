@@ -1,4 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
+import { gql } from "../__generated__";
 import type { DeleteReviewMutationVariables } from "../__generated__/graphql";
 import { GET_REPOSITORY_WITH_REVIEWS, GET_USER_REVIEWS } from '../fragments';
 
@@ -40,3 +41,11 @@ export const useCreateReviewMutation = () => useMutation(Create_Review_Mutation,
     ];
   },
 });
+
+export const Create_User_Mutation = gql(`
+  mutation CreateUser($user: CreateUserInput!) {
+    createUser(user: $user) {
+      id
+    }
+  }
+`);

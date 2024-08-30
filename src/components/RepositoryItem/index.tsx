@@ -1,7 +1,7 @@
-import { type FragmentType, gql, useFragment } from '@/gql';
+import { gql, useFragment, type FragmentType } from '@/gql';
 import { layoutSizing } from '@/styles/Base';
 import { emojify } from 'node-emoji';
-import React, { type ComponentProps } from 'react';
+import React, { useMemo, type ComponentProps } from 'react';
 import { Image, Paragraph, Separator, XStack, YStack } from 'tamagui';
 import { formatNumberToK } from './utils';
 
@@ -38,6 +38,10 @@ const RepositoryItem = ({
   ...yStackProps
 }: RepositoryItemProps) => {
   const item = useFragment(Repository_Fragment, itemData);
+  const description = useMemo(
+    () => emojify(item.description ?? ''),
+    [item.description]
+  );
 
   const details = {
     Stars: formatNumberToK(item.stargazersCount ?? 0),
@@ -61,7 +65,7 @@ const RepositoryItem = ({
           </Paragraph>
           {item.description && (
             <Paragraph marginBottom={'$3'} color={'$color11'}>
-              {emojify(item.description ?? '')}
+              {description}
             </Paragraph>
           )}
           {item.language && (

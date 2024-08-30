@@ -1,39 +1,6 @@
-import { colors, layoutSizing } from '@/styles/Base';
+import { colors } from '@/styles/Base';
 import { useField } from 'formik';
-import { StyleSheet } from 'react-native';
-import { Input, Text, TextArea } from 'tamagui';
-
-export const styles = StyleSheet.create({
-  container: {
-    minHeight: '100%',
-    backgroundColor: colors.dark.surface1,
-    padding: layoutSizing.s6,
-  },
-  submit: {
-    backgroundColor: colors.dark.brand,
-    height: layoutSizing.s16,
-  },
-  passwordWrapper: {
-    position: 'relative',
-  },
-  pressable: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-  /* positioned over password input, on right, centered vertically */
-  iconWrapper: {
-    marginRight: layoutSizing.s2,
-    padding: layoutSizing.s2,
-  },
-  errorText: {
-    color: colors.dark.error,
-  },
-});
+import { Input, styled, Text, TextArea } from 'tamagui';
 
 export type FormikInputProps = {
   inputProps?: React.ComponentProps<typeof Input>;
@@ -47,6 +14,26 @@ export type FormikTextAreaProps = {
   name: string;
 };
 
+const InputWithError = styled(Input, {
+  variants: {
+    hasError: {
+      true: {
+        borderColor: '$error',
+      },
+    },
+  },
+});
+
+const TextAreaWithError = styled(TextArea, {
+  variants: {
+    hasError: {
+      true: {
+        borderColor: '$error',
+      },
+    },
+  },
+});
+
 export const FormikTextArea = ({
   name,
   textAreaProps,
@@ -59,19 +46,17 @@ export const FormikTextArea = ({
 
   return (
     <>
-      <TextArea
+      <TextAreaWithError
         onBlur={() => helpers.setTouched(true)}
         onChangeText={(value) => helpers.setValue(value)}
         value={field.value}
-        style={{
-          borderColor: showError ? colors.dark.error : colors.dark.surface4,
-        }}
         autoCapitalize="none"
+        hasError={!!showError}
         {...textAreaProps}
       />
       {/* Show the error message if the value of showError variable is true  */}
       {showError && (
-        <Text style={styles.errorText} {...errorProps}>
+        <Text color="$error" {...errorProps}>
           {meta.error}
         </Text>
       )}
@@ -91,19 +76,17 @@ export const FormikTextInput = ({
 
   return (
     <>
-      <Input
+      <InputWithError
         onChangeText={helpers.setValue}
         onBlur={() => helpers.setTouched(true)}
         value={field.value}
-        style={{
-          borderColor: showError ? colors.dark.error : colors.dark.surface4,
-        }}
         autoCapitalize="none"
+        hasError={!!showError}
         {...inputProps}
       />
       {/* Show the error message if the value of showError variable is true  */}
       {showError && (
-        <Text style={styles.errorText} {...errorProps}>
+        <Text color="$error" {...errorProps}>
           {meta.error}
         </Text>
       )}
@@ -128,13 +111,13 @@ export const FormikNumberInput = ({
         onBlur={() => helpers.setTouched(true)}
         value={`${meta.value}`} // Convert the value to string
         style={{
-          borderColor: showError ? colors.dark.error : colors.dark.surface4,
+          borderColor: showError ? '$error' : colors.dark.surface4,
         }}
         keyboardType="numeric"
         {...inputProps}
       />
       {showError && (
-        <Text style={styles.errorText} {...errorProps}>
+        <Text color="$error" {...errorProps}>
           {meta.error}
         </Text>
       )}

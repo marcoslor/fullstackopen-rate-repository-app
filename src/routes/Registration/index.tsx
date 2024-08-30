@@ -1,13 +1,12 @@
-import { FormikTextInput } from '@/components/form/FormikTextInput';
-import { FormSubmissionButton } from '@/components/layout/buttons/FormSubmissionButton';
 import PageWrapper from '@/components/layout/PageWrapper';
-import { gql } from '@/gql';
 import type {} from '@/gql/__generated__/graphql';
+import { Create_User_Mutation } from '@/gql/mutations';
+import { mapErrorToField } from '@/utils/setErrorByMapping';
 import { useMutation } from '@apollo/client';
-import { Formik, type FormikHelpers, type FormikProps } from 'formik';
-import { H1, YStack } from 'tamagui';
+import { Formik, type FormikHelpers } from 'formik';
+import { H1 } from 'tamagui';
 import * as Yup from 'yup';
-import { mapErrorToField } from '../AddReviewView/setErrorByMapping';
+import { RegistrationFormView } from './RegistrationFormView';
 
 const RegistrationFormSchema = Yup.object().shape({
   username: Yup.string().required('Required'),
@@ -15,46 +14,9 @@ const RegistrationFormSchema = Yup.object().shape({
   confirmPassword: Yup.string().required('Required'),
 });
 
-type RegistrationFormSchemaValues = Yup.InferType<
+export type RegistrationFormSchemaValues = Yup.InferType<
   typeof RegistrationFormSchema
 >;
-
-const RegistrationFormInner = ({
-  isSubmitting,
-  handleSubmit,
-}: FormikProps<RegistrationFormSchemaValues>) => {
-  return (
-    <YStack gap={'$2'}>
-      <FormikTextInput
-        name="username"
-        inputProps={{ placeholder: 'Username' }}
-      />
-      <FormikTextInput
-        name="password"
-        inputProps={{ placeholder: 'Password' }}
-      />
-      <FormikTextInput
-        name="confirmPassword"
-        inputProps={{ placeholder: 'Confirm Password' }}
-      />
-      <FormSubmissionButton
-        loading={isSubmitting}
-        onPress={() => handleSubmit()}
-        marginTop={'$3'}
-      >
-        Register
-      </FormSubmissionButton>
-    </YStack>
-  );
-};
-
-const Create_User_Mutation = gql(`
-  mutation CreateUser($user: CreateUserInput!) {
-    createUser(user: $user) {
-      id
-    }
-  }
-`);
 
 export const Registration = () => {
   const [createUserMutation] = useMutation(Create_User_Mutation);
@@ -103,7 +65,7 @@ export const Registration = () => {
         validationSchema={RegistrationFormSchema}
         onSubmit={onSubmit}
       >
-        {(formikProps) => <RegistrationFormInner {...formikProps} />}
+        {(formikProps) => <RegistrationFormView {...formikProps} />}
       </Formik>
     </PageWrapper>
   );

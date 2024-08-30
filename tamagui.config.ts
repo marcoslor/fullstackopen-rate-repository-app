@@ -39,6 +39,16 @@ const appConfig = createTamagui({
     body: font,
     heading: font
   },
+  themes: {
+    dark: {
+      ...config.themes.dark,
+      '$error': '$red8', 
+    },
+    light: {
+      ...config.themes.light,
+      '$error': '$red8', 
+    },
+  },
   media: {
     xs: { maxWidth: 660 },
     gtXs: { minWidth: 660 + 1 },

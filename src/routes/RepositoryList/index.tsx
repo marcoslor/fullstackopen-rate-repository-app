@@ -1,9 +1,10 @@
 import { DefaultSelect } from '@/components/ListFilter';
-import { type FragmentType, gql, useFragment } from '@/gql';
+import { type FragmentType, useFragment } from '@/gql';
 import {
   AllRepositoriesOrderBy,
   OrderDirection,
 } from '@/gql/__generated__/graphql';
+import { GET_ALL_REPOSITORIES } from '@/gql/queries';
 import { useQuery } from '@apollo/client';
 import { ListFilter, Search, X } from '@tamagui/lucide-icons';
 import { useState } from 'react';
@@ -15,18 +16,6 @@ import {
   RepositoryItem,
   Repository_Fragment,
 } from '../../components/RepositoryItem';
-
-const GET_ALL_REPOSITORIES = gql(`
-  query GetAllRepositories ($orderBy: AllRepositoriesOrderBy!, $orderDirection: OrderDirection!, $searchKeyword: String) {
-    repositories (orderBy: $orderBy, orderDirection: $orderDirection, searchKeyword: $searchKeyword) {
-      edges {
-        node {
-          ...Repository_Fragment
-        }
-      }
-    }
-  }
-`);
 
 const RepositoryListItemView = (props: {
   item: FragmentType<typeof Repository_Fragment>;
@@ -77,18 +66,16 @@ export const RepositoryList = () => {
   const [searchInput, setSearchInput] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
 
-  const setSearchKeywordWithDelay = useDebouncedCallback(
-    setSearchKeyword,
-    1000
-  );
+  const setSearchKeywordWithDelay = useDebouncedCallback(setSearchKeyword, 500);
 
-  const { data, loading, refetch } = useQuery(GET_ALL_REPOSITORIES, {
-    fetchPolicy: 'cache-and-network',
+  const { data, loading, refetch, fetchMore } = useQuery(GET_ALL_REPOSITORIES, {
     variables: {
       orderBy: orderQueryOptions[selectedSort].orderBy,
       orderDirection: orderQueryOptions[selectedSort].orderDirection,
-      searchKeyword: searchKeyword,
+      searchKeyword,
+      first: 8,
     },
+    notifyOnNetworkStatusChange: true,
   });
 
   const handleClear = () => {
@@ -105,6 +92,20 @@ export const RepositoryList = () => {
     setSelectedSort(value);
   };
 
+  const handleOnEndReached = () => {
+    const canFetchMore = !loading && data?.repositories.pageInfo.hasNextPage;
+
+    if (!canFetchMore) {
+      return;
+    }
+
+    fetchMore({
+      variables: {
+        after: data?.repositories.pageInfo.endCursor,
+      },
+    });
+  };
+
   const repositories = data?.repositories.edges.map((edge) => edge.node) ?? [];
 
   return (
@@ -117,6 +118,8 @@ export const RepositoryList = () => {
         data={repositories}
         refreshing={loading}
         onRefresh={refetch}
+        onEndReached={handleOnEndReached}
+        onEndReachedThreshold={2}
         ItemSeparatorComponent={() => <View height={'$1'} />}
         renderItem={({ item }) => <RepositoryListItemView item={item} />}
         stickyHeaderHiddenOnScroll={true}

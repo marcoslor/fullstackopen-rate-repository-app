@@ -12,6 +12,7 @@ import { RepositoryReviewWithActions } from './components/RepositoryReviewWithAc
 
 const RepositoryItemView = (props: {
   item: FragmentType<typeof Repository_With_Reviews_Fragment>;
+  onEndReached: () => void;
 }) => {
   const item = useFragment(Repository_With_Reviews_Fragment, props.item);
 
@@ -22,6 +23,8 @@ const RepositoryItemView = (props: {
       paddingHorizontal={'$4'}
     >
       <FlatList
+        onEndReached={props.onEndReached}
+        onEndReachedThreshold={2}
         ListHeaderComponent={() => (
           <>
             <RepositoryItem
@@ -66,10 +69,28 @@ const RepositoryItemView = (props: {
 export const FullRepositoryItemView = () => {
   const { id } = useParams() as { id: string };
 
-  const { data, loading, error } = useQuery(GET_REPOSITORY_WITH_REVIEWS, {
-    fetchPolicy: 'cache-and-network',
-    variables: { id },
-  });
+  const { data, loading, error, fetchMore } = useQuery(
+    GET_REPOSITORY_WITH_REVIEWS,
+    {
+      variables: { id },
+    }
+  );
+
+  const handleOnEndReached = () => {
+    const canFetchMore =
+      !loading && data?.repository?.reviews.pageInfo.hasNextPage;
+
+    if (!canFetchMore) {
+      return;
+    }
+
+    fetchMore({
+      variables: {
+        id,
+        after: data?.repository?.reviews.pageInfo.endCursor,
+      },
+    });
+  };
 
   if (loading) {
     return (
@@ -95,5 +116,10 @@ export const FullRepositoryItemView = () => {
     );
   }
 
-  return <RepositoryItemView item={data.repository} />;
+  return (
+    <RepositoryItemView
+      item={data.repository}
+      onEndReached={handleOnEndReached}
+    />
+  );
 };

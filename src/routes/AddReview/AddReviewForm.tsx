@@ -8,7 +8,7 @@ import type { CreateReviewMutationVariables } from '@/gql/__generated__/graphql'
 import { Formik, type FormikHelpers } from 'formik';
 import { Stack, YStack } from 'tamagui';
 import * as Yup from 'yup';
-import { mapErrorToFormikFields } from './setErrorByMapping';
+import { mapErrorToField } from '../../utils/setErrorByMapping';
 
 const AddReviewFormSchema = Yup.object().shape({
   ownerName: Yup.string().required('Required'),
@@ -32,12 +32,8 @@ export const AddReviewForm = ({
     values: CreateReviewMutationVariables,
     formik: FormikHelpers<AddReviewFormValues>
   ) => {
-    return onSubmit(values).catch((error) =>
-      mapErrorToFormikFields<AddReviewFormValues>(
-        error,
-        formik,
-        errorFieldMapping
-      )
+    return onSubmit(values).catch(
+      mapErrorToField<AddReviewFormValues>(errorFieldMapping, formik)
     );
   };
 

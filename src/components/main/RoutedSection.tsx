@@ -1,5 +1,5 @@
 import { useSignInStatus } from '@/hooks/useSignInStatus';
-import { AddRevirewView } from '@/routes/AddReviewView';
+import { AddRevirewView } from '@/routes/AddReview';
 import { FullRepositoryItemView } from '@/routes/FullRepositoryItemView';
 import { Registration } from '@/routes/Registration';
 import { RepositoryList } from '@/routes/RepositoryList';

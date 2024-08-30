@@ -1,9 +1,16 @@
 import { gql } from '../index';
 
 export const GET_REPOSITORY_WITH_REVIEWS = gql(`
-  query GET_REPOSITORY_WITH_REVIEWS($id: ID!) {
+  query GET_REPOSITORY_WITH_REVIEWS($id: ID!, $after: String, $first: Int) {
     repository(id: $id) {
       ...Repository_With_Reviews_Fragment
+      reviews (after: $after, first: $first) {
+        pageInfo {
+          hasNextPage
+          endCursor
+          startCursor
+        }
+      }
     }
   }
 `);
@@ -28,7 +35,12 @@ export const Repository_With_Reviews_Fragment = gql(`
   fragment Repository_With_Reviews_Fragment on Repository {
     ...Repository_Fragment
     fullName
-    reviews {
+    reviews (after: $after, first: $first) {
+      pageInfo {
+        hasNextPage
+        endCursor
+        startCursor
+      }
       edges {
         node {
           ...Repository_Review_Fragment
@@ -38,6 +50,7 @@ export const Repository_With_Reviews_Fragment = gql(`
     }
   }
 `);
+
 export const GET_USER_REVIEWS = gql(`
   query GetUserReviews {
     me {
